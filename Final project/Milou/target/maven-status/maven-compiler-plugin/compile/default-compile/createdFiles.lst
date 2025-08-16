@@ -1,0 +1,7 @@
+aut\ap\service\UserService.class
+aut\ap\service\EmailService.class
+aut\ap\Main.class
+aut\ap\model\EmailRecipient.class
+aut\ap\framework\SingletonSessionFactory.class
+aut\ap\model\Email.class
+aut\ap\model\User.class
