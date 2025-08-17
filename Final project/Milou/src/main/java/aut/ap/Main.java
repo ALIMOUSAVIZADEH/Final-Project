@@ -132,7 +132,7 @@ public class Main {
 
                                     switch (scanner.nextLine()) {
                                         case "A", "a":
-                                            List<Email> allReceivedEmails = EmailService.getReceivedEmails(user, false);
+                                            List<Email> allReceivedEmails = EmailService.getAllEmails(user);
 
                                             System.out.println("All Emails:");
                                             for (Email e : allReceivedEmails)
