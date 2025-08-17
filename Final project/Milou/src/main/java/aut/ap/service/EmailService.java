@@ -47,7 +47,7 @@ public final class EmailService {
             throw new IllegalArgumentException("Sender, recipients, subject and body can not be empty.");
 
         if (subject.length() > 75)
-            throw new IllegalArgumentException("Subject must be at lest 75 characters long.");
+            throw new IllegalArgumentException("Subject can not be longer than 75 characters.");
 
         Email email = new Email(generateUniqueCode(), sender, null, subject, body, LocalDateTime.now());
 
@@ -92,6 +92,19 @@ public final class EmailService {
         });
     }
 
+    public static List<Email> getAllEmails(User user) {
+        return SingletonSessionFactory.get().fromTransaction(session -> {
+            String sql = "select e.* from emails e " +
+                    "join email_recipients er on e.id = er.email_id " +
+                    "where er.recipient_id = :userId or e.sender_id = :userId " +
+                    "order by e.sent_at desc";
+
+            return session.createNativeQuery(sql, Email.class)
+                    .setParameter("userId", user.getId())
+                    .getResultList();
+        });
+    }
+
     public static Email findEmailByCode(String code) throws IllegalArgumentException {
         if (code == null || code.isBlank())
             throw new IllegalArgumentException("The code can not be empty.");
@@ -114,6 +127,9 @@ public final class EmailService {
     public static void markAsRead(Email email, User user) throws RuntimeException {
         if (email == null || user == null)
             throw new IllegalArgumentException("Email and user can ot be empty.");
+
+        if (user.getId() == email.getSender().getId())
+            return;
 
         SingletonSessionFactory.get().inTransaction(session -> {
             String sql = "select * from email_recipients where recipient_id = :userId and email_id = :emailId";
